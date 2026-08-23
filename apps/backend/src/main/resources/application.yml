@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: pulse-backend
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pulse}
+    username: ${DB_USER:pulse}
+    password: ${DB_PASSWORD:pulse}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USER:}
+    password: ${SMTP_PASSWORD:}
+
+server:
+  port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+
+pulse:
+  jwt:
+    secret: ${JWT_SECRET:change-this-super-secret-key-in-production-min-256-bits}
+    access-token-ttl-minutes: ${JWT_ACCESS_TTL:15}
+    refresh-token-ttl-days: ${JWT_REFRESH_TTL:30}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
+  storage:
+    provider: ${STORAGE_PROVIDER:local}
+    local-path: ${STORAGE_LOCAL_PATH:./uploads}
+    s3-bucket: ${STORAGE_S3_BUCKET:pulse-files}
+    s3-endpoint: ${STORAGE_S3_ENDPOINT:}
+    s3-region: ${STORAGE_S3_REGION:us-east-1}
+  ai:
+    provider: ${AI_PROVIDER:anthropic}
+    api-key: ${AI_API_KEY:}
+    model: ${AI_MODEL:claude-sonnet-4-6}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    root: INFO
+    com.pulse: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
